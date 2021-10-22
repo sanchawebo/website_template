@@ -1,6 +1,8 @@
 {% extends "layout.html" %}
 {% block content %}
-<h1>This is the index pageroni</h1>
-{% include "partials/navigation.html" %}
+
+{% import 'macros/nav-macro.html' as nav %}
+
+{{nav.active('home')}}
 
 {% endblock %}
