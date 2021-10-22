@@ -1,4 +1,5 @@
 const gulp = require("gulp");
+const nunjucksRender = require('gulp-nunjucks-render');
 const browserSync = require("browser-sync").create();
 
 const sass = require("gulp-sass")(require("sass"));
@@ -9,13 +10,24 @@ const cssnano = require("cssnano");
 const minify = require("gulp-minify");
 
 const config = {
+    srcHtml: "app/src/pages/**/*.+(html|njk)",
+    srcHtmlTmplt: "app/src/templates",
     srcScss: "app/src/scss/*.scss",
     srcJs: "app/src/js/*.js",
     buildHtml: "app/build",
     buildCss: "app/build/css",
     buildJs: "app/build/js",
 }
-
+// Render html nunjuck files
+function renderNunjucks() {
+    return gulp
+        .src(config.srcHtml)
+        .pipe(nunjucksRender({
+            path: [config.srcHtmlTmplt]
+        }))
+        .pipe(gulp.dest(config.buildHtml))
+        .pipe(browserSync.stream());
+}
 // Compile .scss to .css file
 function compileCSS() {
     var plugins = [
@@ -50,11 +62,12 @@ function watchChanges() {
         index: "index.html",
     });
 
-    gulp.watch(config.buildHtml + "/*.html").on("change", browserSync.reload);
+    gulp.watch(config.srcHtml, renderNunjucks);
     gulp.watch(config.srcScss, compileCSS);
     gulp.watch(config.srcJs, minifyJs);
 }
 
+exports.renderNunjucks = renderNunjucks;
 exports.compileCSS = compileCSS;
 exports.watchChanges = watchChanges;
 exports.default = watchChanges;
