@@ -1,5 +1,6 @@
 const gulp = require("gulp");
 const nunjucksRender = require('gulp-nunjucks-render');
+const data = require('gulp-data');
 const browserSync = require("browser-sync").create();
 
 const sass = require("gulp-sass")(require("sass"));
@@ -22,6 +23,9 @@ const config = {
 function renderNunjucks() {
     return gulp
         .src(config.srcHtml)
+        .pipe(data(function() {
+            return require('./app/src/data.json')
+        }))
         .pipe(nunjucksRender({
             path: [config.srcHtmlTmplt]
         }))
